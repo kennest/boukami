@@ -32,7 +32,17 @@ class AdminController extends Controller
             'client'=>'required',
         ]);
         $client=Client::find($request->input('client'));
+        $n=$client->niveau;
         $filleuils=$this->find_filleuils($client);
+        $tmp=new Collection();
+        foreach ($filleuils as $f) {
+            $tmp=$this->find_filleuils($f);
+            foreach ($tmp as $t) {
+                $filleuils=$filleuils->merge($this->find_filleuils($t));
+            }
+            $tmp=[];
+            $filleuils=$filleuils->merge($this->find_filleuils($f));
+        }
         dd($filleuils);
     }
 
@@ -143,7 +153,7 @@ class AdminController extends Controller
         return $params;
     }
 
-    private function find_filleuils(Client $c):Collection
+    private function find_filleuils(Client $c)
     {
         $adn=Str::after($c->code, '-');
         $filleuils=Client::where('niveau', '=', $c->niveau+1)->get()->reject(function ($q) use ($adn) {
