@@ -41,7 +41,7 @@ class AdminController extends Controller
                     'telephone'=>'required|phone:CI',
                     'photo'=>'required',
                     'sexe'=>'required',
-                    'formule'=>'required'
+                    'formule'=>'required',
         ]);
 
         //On met a jour le niveau courant
@@ -55,7 +55,7 @@ class AdminController extends Controller
 
         
         $client=new Client();
-        
+
         $formule=Formule::find($request->input('formule'));
 
         $client->nom=$request->input('nom');
@@ -88,13 +88,16 @@ class AdminController extends Controller
             $code=$prefix.'-'.rand(0, 999999);
 
             $client->code=$code;
+            $client->formule()->associate($formule);
             $client->save();
             $parrain->filleuils()->attach($client);
+            
             $parrain->save();
         //sinon il s'agit du premier client
         } else {
             $code='00000'.'-'.rand(0, 999999);
             $client->code=$code;
+            $client->formule()->associate($formule);
             $client->save();
         }
         //Upload de la photo
