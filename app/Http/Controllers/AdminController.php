@@ -7,15 +7,33 @@ use App\Models\Client;
 use App\Models\Parametre;
 use Illuminate\Support\Str;
 use App\Models\Formule;
+use Illuminate\Database\Eloquent\Collection;
 
 class AdminController extends Controller
 {
     public function __construct()
     {
     }
+
     public function index()
     {
         return view('Administrateur.index');
+    }
+
+    public function vue()
+    {
+        $clients=Client::all();
+        return view('Administrateur.pages.vue', compact('clients'));
+    }
+
+    public function vueClient(Request $request)
+    {
+        $this->validate($request, [
+            'client'=>'required',
+        ]);
+        $client=Client::find($request->input('client'));
+        $filleuils=$this->find_filleuils($client);
+        dd($filleuils);
     }
 
     public function editClient($id=null)
@@ -85,7 +103,7 @@ class AdminController extends Controller
             
             //on genere le code a partir du code du parrain
             $prefix=Str::after($parrain->code, '-');
-            $code=$prefix.'-'.rand(0, 999999);
+            $code=$prefix.'-'.rand(0, 999999999);
 
             $client->code=$code;
             $client->formule()->associate($formule);
@@ -95,14 +113,12 @@ class AdminController extends Controller
             $parrain->save();
         //sinon il s'agit du premier client
         } else {
-            $code='00000'.'-'.rand(0, 999999);
+            $code='000000000'.'-'.rand(0, 999999999);
             $client->code=$code;
             $client->formule()->associate($formule);
             $client->save();
         }
-        //Upload de la photo
-       
-       
+           
         //nombre de client du niveau courant
         $nb_curr_level=Client::where('niveau', $current_level)->count();
 
@@ -111,7 +127,6 @@ class AdminController extends Controller
             $params=$this->upgrade($params);
         }
            
-        //Generation de code
         return redirect()->back();
     }
 
@@ -128,20 +143,14 @@ class AdminController extends Controller
         return $params;
     }
 
-    //Si on a plus d'un client en DB on  recupere le client qui n'as pas
-    // encore 3 filleuils direct et on lui prend son prefix
-    private function generate_code():string
+    private function find_filleuils(Client $c):Collection
     {
-        $params=Parametres::all()->first();
-        if ($params->niveau_courant==1) {
-            $prefix='000000';
-        } else {
-            $client=Client::where([
-                ['count','<', 3],
-                ['niveau','<',$params->niveau_courant]
-            ])->get()->first();
-            $prefix=Str::after($client->code, '-');
-        }
-        return $prefix.'-'.rand(0, 999999);
+        $adn=Str::after($c->code, '-');
+        $filleuils=Client::where('niveau', '=', $c->niveau+1)->get()->reject(function ($q) use ($adn) {
+            if (Str::before($q->code, '-')!=$adn) {
+                return $q;
+            }
+        });
+        return $filleuils;
     }
 }

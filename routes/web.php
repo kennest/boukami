@@ -18,6 +18,8 @@ Route::get('/', function () {
 });
 Route::prefix('admin')->group(function () {
     Route::get('/', 'AdminController@index')->name('index');
+    Route::get('/vue', 'AdminController@vue')->name('vue');
+    Route::post('/vue', 'AdminController@vueClient')->name('vue.client');
     Route::get('/edit/client/{id?}', 'AdminController@editClient')->name('edit.client');
     Route::post('/add/client', 'AdminController@add')->name('client.add');
     Route::post('/update/client', 'AdminController@update')->name('client.update');

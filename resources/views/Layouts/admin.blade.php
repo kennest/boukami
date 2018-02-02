@@ -19,7 +19,7 @@
 
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Company name</a>
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#"> {{env('APP_NAME')}}</a>
       <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
@@ -40,7 +40,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{route('edit.client')}}">
                   <span data-feather="users"></span>
                   Clients
                 </a>
@@ -52,7 +52,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{route('vue')}}">
                   <span data-feather="layers"></span>
                   Vue graphique
                 </a>
