@@ -26,6 +26,8 @@ class AdminController extends Controller
         return view('Administrateur.pages.vue', compact('clients'));
     }
 
+
+    //Retourne les filleuils du clients
     public function vueClient(Request $request)
     {
         $this->validate($request, [
@@ -43,7 +45,26 @@ class AdminController extends Controller
             $tmp=[];
             $filleuils=$filleuils->merge($this->find_filleuils($f));
         }
-        dd($filleuils);
+
+        $n1=$filleuils->reject(function ($q) use ($n) {
+            if ($q->niveau!=$n+1) {
+                return $q;
+            }
+        });
+
+        $n2=$filleuils->reject(function ($q) use ($n) {
+            if ($q->niveau!=$n+2) {
+                return $q;
+            }
+        });
+
+        $n3=$filleuils->reject(function ($q) use ($n) {
+            if ($q->niveau!=$n+3) {
+                return $q;
+            }
+        });
+  
+        return view('Administrateur.pages.graph', compact('n1', 'n2', 'n3', 'client'));
     }
 
     public function editClient($id=null)
