@@ -120,7 +120,10 @@ class AdminController extends Controller
         $client->age=$request->input('age');
 
         //Upload photo
-        $path = $request->photo->store('public/images');
+        $path = $request->file('photo')->store(
+            'photos', 'uploads'
+        );
+        //dd($path);
         $client->photo=$path;
 
         //si le parrain est choisi dans la liste
@@ -166,7 +169,7 @@ class AdminController extends Controller
     {
     }
 
-    private function upgrade(Parametre $params):Parametre
+    private function upgrade(Parametre $params)
     {
         $params->niveau_courant=($params->niveau_courant+1);
         $params->vmax=3*$params->vmax;
